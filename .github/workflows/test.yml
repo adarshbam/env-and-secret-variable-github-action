@@ -27,5 +27,5 @@ jobs:
       - run: echo ${{secrets.DIR_PATH}}
         if: github.ref_name == 'main'
       - run: echo ${{vars.URL}}
-      - run: echo Hello
+      - run: echo Hello World!
       - run: echo $USER
