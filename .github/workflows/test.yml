@@ -6,5 +6,6 @@ jobs:
     env:
       USER: "Ubuntu"
     steps:
-      - run: echo ${{env.USER}}
+      - run: echo ${{secrets.AWS_SECRET}}
+      - run: echo ${{vars.DIR_PATH}}
       - run: echo $USER
