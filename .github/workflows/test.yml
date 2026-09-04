@@ -1,11 +1,31 @@
 name: My first workflow
-on: [push, workflow_dispatch]
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - test
 jobs:
   my-first-job:
+    environment: ${{github.ref_name == 'main' && 'PROD' || 'TEST'}}
     runs-on: ubuntu-latest
     env:
       USER: "Ubuntu"
     steps:
-      - run: echo ${{secrets.AWS_SECRET}}
-      - run: echo ${{vars.DIR_PATH}}
+      - run: echo ${{secrets.DIR_PATH}}
+        if: github.ref_name == 'main'
+
+      - run: echo ${{vars.URL}}
+      - run: echo Hello
+      - run: echo $USER
+  my-second-job:
+    environment: ${{github.ref_name == 'main' && 'PROD' || 'TEST'}}
+    runs-on: ubuntu-latest
+    env:
+      USER: "Ubuntu"
+    steps:
+      - run: echo ${{secrets.DIR_PATH}}
+        if: github.ref_name == 'main'
+      - run: echo ${{vars.URL}}
+      - run: echo Hello
       - run: echo $USER
