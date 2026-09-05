@@ -154,37 +154,55 @@ jobs:
       SMTP_USER: ${{ secrets.SMTP_USER || vars.SMTP_USER }}
       SMTP_PASS: ${{ secrets.SMTP_PASS }}
 
-      # ------------------------------------------------------------------------
-      # 11. SMS Service (Twilio)
-      # ------------------------------------------------------------------------
-      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
-      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
-      TWILIO_PHONE_NUMBER: ${{ secrets.TWILIO_PHONE_NUMBER }}
-
     steps:
-      - name: Checkout my-storage
-        uses: actions/checkout@v4
-        with:
-          repository: adarshbam/my-storage
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 24
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Install Dependencies
+      - name: Setup SSH with EC2 of MY Storage
         run: |
-          if [ -f "Backend/package.json" ]; then
-            cd Backend
-            npm ci
-          elif [ -f "BACKEND/package.json" ]; then
-            cd BACKEND
-            npm ci
-          fi
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/my-key.pem
+          chmod 600 ~/.ssh/my-key.pem
+          cat > ~/.ssh/config <<'EOF'
+          Host yourvaultstorage
+              HostName 13.207.230.92
+              User ubuntu
+              IdentityFile ~/.ssh/yourvaultstorage.pem
+              StrictHostKeyChecking no
+          EOF
+          chmod 600 ~/.ssh/config
+
+      - name: Deploy using SSH EC@ of My Storage
+        run: |
+          ssh securevault << 'EOF'
+            # Stage 1/4: Git Synchronization
+            # ------------------------------------------------------------------------------
+            echo ""
+            echo "📥 [1/4] Syncing latest changes from git origin/${BRANCH}..."
+            git fetch origin "${BRANCH}"
+            git reset --hard "origin/${BRANCH}"
+            git clean -fd -e ".env" -e "node_modules"
+            SYNCED_HASH=$(git rev-parse --short HEAD)
+            SYNCED_MSG=$(git log -1 --pretty=format:"%s")
+            echo "✅ Synced to Git Commit: [${SYNCED_HASH}]"
+            echo "💬 Latest Commit:        \"${SYNCED_MSG}\""
+
+            echo "⚙️ [] Updating Backend & Reloading PM2 Cluster (Zero-Downtime)..."
+            cd "$PROJECT_DIR/Backend"
+            if [ ! -d "node_modules" ]; then
+              echo "📦 [Backend] Installing backend dependencies..."
+              npm install --omit=dev
+            else
+              echo "⚡ [Backend] Dependencies verified. Skipping re-install."
+            fi
+
+            cd "$PROJECT_DIR"
+            if [ -f "ecosystem.config.cjs" ]; then
+              pm2 reload ecosystem.config.cjs --update-env || pm2 reload vault-backend --update-env
+            else
+              pm2 reload vault-backend --update-env
+            fi
+            echo "✅ Backend PM2 cluster reloaded with zero downtime."
+
+            echo ""
+            echo "=================================================================="
+            echo "🎉 [EC2 Remote Runner] Full Stack Deployment for my-storage [${COMMIT_ID:0:7}] Completed Successfully!"
+            echo "=================================================================="
+            EOF
