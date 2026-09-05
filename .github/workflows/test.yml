@@ -52,7 +52,7 @@ jobs:
           fi
           npm ci
 
-      - name: Run Automated Tests
+      - name: Run Automated Dummy Tests
         run: |
           if [ -f "Frontend/package.json" ]; then
             cd Frontend
