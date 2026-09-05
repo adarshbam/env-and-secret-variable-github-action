@@ -30,8 +30,10 @@ jobs:
       VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.VITE_FIREBASE_MEASUREMENT_ID || 'G-Q0HFRDCLP7' }}
 
     steps:
-      - name: Checkout Code
+      - name: Checkout my-storage
         uses: actions/checkout@v4
+        with:
+          repository: adarshbam/my-storage
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -49,10 +51,10 @@ jobs:
         run: |
           if [ -f "Frontend/package.json" ]; then
             cd Frontend
+            npm ci
           fi
-          npm ci
 
-      - name: Run Automated Dummy Tests
+      - name: Run Automated Dummy Test
         run: |
           if [ -f "Frontend/package.json" ]; then
             cd Frontend
