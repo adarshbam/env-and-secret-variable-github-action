@@ -158,8 +158,8 @@ jobs:
       - name: Setup SSH with EC2 of MY Storage
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "${{secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/my-key.pem
-          chmod 600 ~/.ssh/my-key.pem
+          printf '%s\n' "${{secrets.SSH_PRIVATE_KEY}}" > ~/.ssh/yourvaultstorage.pem
+          chmod 600 ~/.ssh/yourvaultstorage.pem
           cat > ~/.ssh/config <<'EOF'
           Host yourvaultstorage
               HostName 13.207.230.92
@@ -171,7 +171,7 @@ jobs:
 
       - name: Deploy using SSH EC@ of My Storage
         run: |
-          ssh yourvaultstorage << 'EOF'
+          ssh yourvaultstorage <<'EOF'
             # Stage 1/4: Git Synchronization
             # ------------------------------------------------------------------------------
             echo ""
