@@ -172,6 +172,10 @@ jobs:
       - name: Deploy using SSH EC@ of My Storage
         run: |
           ssh yourvaultstorage <<'EOF'
+            PROJECT_DIR="${DIR_PATH:-$HOME/my-storage}"
+            BRANCH="main"
+            cd "$PROJECT_DIR"
+
             # Stage 1/4: Git Synchronization
             # ------------------------------------------------------------------------------
             echo ""
@@ -203,6 +207,6 @@ jobs:
 
             echo ""
             echo "=================================================================="
-            echo "🎉 [EC2 Remote Runner] Full Stack Deployment for my-storage [${COMMIT_ID:0:7}] Completed Successfully!"
+            echo "🎉 [EC2 Remote Runner] Full Stack Deployment for my-storage [${SYNCED_HASH}] Completed Successfully!"
             echo "=================================================================="
-            EOF
+          EOF
