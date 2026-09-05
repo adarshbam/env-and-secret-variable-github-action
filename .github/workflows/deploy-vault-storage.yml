@@ -18,16 +18,16 @@ jobs:
       # Basic Frontend Environment Variables for Vite Build
       VITE_SERVER_URL: ${{ secrets.VITE_SERVER_URL || vars.VITE_SERVER_URL || '/api' }}
       VITE_MAX_FILE_SIZE: ${{ vars.VITE_MAX_FILE_SIZE || '104857600' }}
-      VITE_GOOGLE_CLIENTID: ${{ secrets.VITE_GOOGLE_CLIENTID || vars.VITE_GOOGLE_CLIENTID || '621477951745-lmj5ogqo7fkmd9sv50t97dj11kdjffpa.apps.googleusercontent.com' }}
-      VITE_GITHUB_CLIENTID: ${{ secrets.VITE_GITHUB_CLIENTID || vars.VITE_GITHUB_CLIENTID || 'Ov23lizS9BOqZ4r4jQPZ' }}
-      VITE_RAZORPAY_KEY_ID: ${{ secrets.VITE_RAZORPAY_KEY_ID || 'rzp_live_T6hzM3zzz0kYbG' }}
-      VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY || 'AIzaSyCDDE-n_Ef8GUIIUxuVd4aOZ3Jj3pCDutM' }}
+      VITE_GOOGLE_CLIENTID: ${{ secrets.VITE_GOOGLE_CLIENTID || vars.VITE_GOOGLE_CLIENTID }}
+      VITE_GITHUB_CLIENTID: ${{ secrets.VITE_GITHUB_CLIENTID || vars.VITE_GITHUB_CLIENTID }}
+      VITE_RAZORPAY_KEY_ID: ${{ secrets.VITE_RAZORPAY_KEY_ID || vars.VITE_RAZORPAY_KEY_ID }}
+      VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
       VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN || 'yourvaultstorage.firebaseapp.com' }}
       VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID || 'yourvaultstorage' }}
       VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET || 'yourvaultstorage.firebasestorage.app' }}
-      VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID || '471747616446' }}
-      VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID || '1:471747616446:web:5cc4c60c26908c8e2648ef' }}
-      VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.VITE_FIREBASE_MEASUREMENT_ID || 'G-Q0HFRDCLP7' }}
+      VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID || vars.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+      VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+      VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.VITE_FIREBASE_MEASUREMENT_ID || vars.VITE_FIREBASE_MEASUREMENT_ID }}
 
     steps:
       - name: Checkout my-storage
@@ -83,23 +83,83 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      S3_BUCKET_NAME: yourvaultstoragefrontend
-      CLOUDFRONT_DISTRIBUTION_ID: E1GUK9KTGYZNFE
       AWS_REGION: ap-south-1
 
-      # Basic Frontend Environment Variables for Vite Build
-      VITE_SERVER_URL: ${{ secrets.VITE_SERVER_URL || vars.VITE_SERVER_URL || '/api' }}
-      VITE_MAX_FILE_SIZE: ${{ vars.VITE_MAX_FILE_SIZE || '104857600' }}
-      VITE_GOOGLE_CLIENTID: ${{ secrets.VITE_GOOGLE_CLIENTID || vars.VITE_GOOGLE_CLIENTID || '621477951745-lmj5ogqo7fkmd9sv50t97dj11kdjffpa.apps.googleusercontent.com' }}
-      VITE_GITHUB_CLIENTID: ${{ secrets.VITE_GITHUB_CLIENTID || vars.VITE_GITHUB_CLIENTID || 'Ov23lizS9BOqZ4r4jQPZ' }}
-      VITE_RAZORPAY_KEY_ID: ${{ secrets.VITE_RAZORPAY_KEY_ID || 'rzp_live_T6hzM3zzz0kYbG' }}
-      VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY || 'AIzaSyCDDE-n_Ef8GUIIUxuVd4aOZ3Jj3pCDutM' }}
-      VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN || 'yourvaultstorage.firebaseapp.com' }}
-      VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID || 'yourvaultstorage' }}
-      VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET || 'yourvaultstorage.firebasestorage.app' }}
-      VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID || '471747616446' }}
-      VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID || '1:471747616446:web:5cc4c60c26908c8e2648ef' }}
-      VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.VITE_FIREBASE_MEASUREMENT_ID || 'G-Q0HFRDCLP7' }}
+      # ------------------------------------------------------------------------
+      # 1. Server Configuration
+      # ------------------------------------------------------------------------
+      PORT: ${{ vars.PORT || '4000' }}
+      NODE_ENV: ${{ vars.NODE_ENV || 'production' }}
+      BACKEND_URL: ${{ secrets.BACKEND_URL || vars.BACKEND_URL || 'https://yourvaultstorage.com/api' }}
+      CLIENT_URL: ${{ secrets.CLIENT_URL || vars.CLIENT_URL || 'https://yourvaultstorage.com' }}
+
+      # ------------------------------------------------------------------------
+      # 2. Database & Cache Configuration
+      # ------------------------------------------------------------------------
+      DB_URL: ${{ secrets.DB_URL }}
+      REDIS_URL: ${{ secrets.REDIS_URL }}
+
+      # ------------------------------------------------------------------------
+      # 3. Security & Limit Configuration
+      # ------------------------------------------------------------------------
+      SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+      MAX_DEVICES_LIMIT: ${{ vars.MAX_DEVICES_LIMIT || '3' }}
+      MAX_FILE_SIZE: ${{ vars.MAX_FILE_SIZE || '104857600' }}
+
+      # ------------------------------------------------------------------------
+      # 4. Google Auth / API Integration
+      # ------------------------------------------------------------------------
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID || vars.GOOGLE_CLIENT_ID }}
+      GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+
+      # ------------------------------------------------------------------------
+      # 5. GitHub OAuth & Webhook Integration
+      # ------------------------------------------------------------------------
+      GITHUB_CLIENT_ID: ${{ secrets.GITHUB_CLIENT_ID || vars.GITHUB_CLIENT_ID }}
+      GITHUB_CLIENT_SECRET: ${{ secrets.GITHUB_CLIENT_SECRET }}
+      GITHUB_WEBHOOK_SECRET: ${{ secrets.GITHUB_WEBHOOK_SECRET }}
+
+      # ------------------------------------------------------------------------
+      # 6. Razorpay Payment Gateway
+      # ------------------------------------------------------------------------
+      RAZORPAY_KEY_ID: ${{ secrets.RAZORPAY_KEY_ID || vars.RAZORPAY_KEY_ID }}
+      RAZORPAY_KEY_SECRET: ${{ secrets.RAZORPAY_KEY_SECRET }}
+      RAZORPAY_WEBHOOK_SECRET: ${{ secrets.RAZORPAY_WEBHOOK_SECRET }}
+
+      # ------------------------------------------------------------------------
+      # 7. Object Storage (Backblaze B2 / S3 Compatible)
+      # ------------------------------------------------------------------------
+      BACKBLAZE_ACCESS_KEY_ID: ${{ secrets.BACKBLAZE_ACCESS_KEY_ID || vars.BACKBLAZE_ACCESS_KEY_ID }}
+      BACKBLAZE_SECRET_ACCESS_KEY: ${{ secrets.BACKBLAZE_SECRET_ACCESS_KEY }}
+      BACKBLAZE_ENDPOINT: ${{ secrets.BACKBLAZE_ENDPOINT || vars.BACKBLAZE_ENDPOINT || 'https://s3.ca-east-006.backblazeb2.com' }}
+      BACKBLAZE_REGION: ${{ vars.BACKBLAZE_REGION || 'ca-east-006' }}
+      BACKBLAZE_BUCKET_NAME: ${{ vars.BACKBLAZE_BUCKET_NAME || 'secure-vault-storage' }}
+
+      # ------------------------------------------------------------------------
+      # 8. Cloudflare Edge CDN
+      # ------------------------------------------------------------------------
+      CLOUDFLARE_CDN_DOMAIN: ${{ secrets.CLOUDFLARE_CDN_DOMAIN || vars.CLOUDFLARE_CDN_DOMAIN || 'https://cdn.yourvaultstorage.com' }}
+      CLOUDFLARE_CDN_SECRET: ${{ secrets.CLOUDFLARE_CDN_SECRET }}
+
+      # ------------------------------------------------------------------------
+      # 9. Firebase Admin
+      # ------------------------------------------------------------------------
+      FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID || vars.FIREBASE_PROJECT_ID || 'yourvaultstorage' }}
+
+      # ------------------------------------------------------------------------
+      # 10. Email Service (SMTP / Nodemailer)
+      # ------------------------------------------------------------------------
+      SMTP_HOST: ${{ secrets.SMTP_HOST || vars.SMTP_HOST || 'smtp.gmail.com' }}
+      SMTP_PORT: ${{ vars.SMTP_PORT || '587' }}
+      SMTP_USER: ${{ secrets.SMTP_USER || vars.SMTP_USER }}
+      SMTP_PASS: ${{ secrets.SMTP_PASS }}
+
+      # ------------------------------------------------------------------------
+      # 11. SMS Service (Twilio)
+      # ------------------------------------------------------------------------
+      TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+      TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+      TWILIO_PHONE_NUMBER: ${{ secrets.TWILIO_PHONE_NUMBER }}
 
     steps:
       - name: Checkout my-storage
@@ -121,7 +181,10 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          if [ -f "BACKEND/package.json" ]; then
+          if [ -f "Backend/package.json" ]; then
+            cd Backend
+            npm ci
+          elif [ -f "BACKEND/package.json" ]; then
             cd BACKEND
             npm ci
           fi
