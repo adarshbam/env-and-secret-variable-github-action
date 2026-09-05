@@ -11,4 +11,4 @@ jobs:
     env:
       USER: "Ubuntu"
     steps:
-      - run: aws
+      - run: aws --version
