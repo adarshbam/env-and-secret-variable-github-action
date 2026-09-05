@@ -171,7 +171,7 @@ jobs:
 
       - name: Deploy using SSH EC@ of My Storage
         run: |
-          ssh securevault << 'EOF'
+          ssh yourvaultstorage << 'EOF'
             # Stage 1/4: Git Synchronization
             # ------------------------------------------------------------------------------
             echo ""
